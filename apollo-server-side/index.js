@@ -1,6 +1,6 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-const schema = gql`
+const typeDefs = gql`
   type Query {
     good: String
     bad: String
@@ -22,7 +22,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  schema,
+  typeDefs,
   resolvers
 });
 
