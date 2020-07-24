@@ -1,3 +1,5 @@
+// DO NOT MODIFY THIS FILE
+
 const { ApolloServer, gql } = require("apollo-server");
 
 const typeDefs = gql`
@@ -5,16 +7,27 @@ const typeDefs = gql`
     good: String
     bad: String
   }
+  type Mutation {
+    doThing(type: String): String
+  }
 `;
 
 const resolvers = {
   Query: {
-    good: (root, args, context) => {
+    good: (parent, args, context, info) => {
       console.log("query - good");
       return 'Yay!';
     },
-    bad: (root, args, context) => {
+    bad: (parent, args, context, info) => {
       console.log("query - bad");
+      // This is a GraphQL error because it happens in the resolver!
+      throw new Error("Something went wrong.");
+    }
+  },
+  Mutation: {
+    doThing: (parent, args, context, info) => {
+      console.log("mutation - do thing")
+      console.log("args", args)
       // This is a GraphQL error because it happens in the resolver!
       throw new Error("Something went wrong.");
     }

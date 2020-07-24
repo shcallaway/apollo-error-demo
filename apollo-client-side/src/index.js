@@ -3,7 +3,7 @@ import { render } from "react-dom";
 
 import { ApolloClient } from "apollo-client";
 import { ApolloLink } from "apollo-link";
-import { ApolloProvider, useQuery } from "@apollo/react-hooks";
+import { ApolloProvider, useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -13,11 +13,16 @@ import { HttpLink } from "apollo-link-http";
 // Instructions: Try uncommenting a single QUERY and errorPolicy to see how they behave.
 
 // This query will trigger a network error because "missing" is not part of the schema.
-const QUERY = gql`{missing}`
+// const QUERY = gql`{missing}`
 
 // This query will trigger a GraphQL error because the "bad" query throws an error on the server-side.
 // Depending on the errorPolicy, result.data may be undefined or partially populated.
 // const QUERY = gql`{good, bad}`
+
+// This produces a network error because doAnotherThing does not exist on the server-side.
+// const QUERY = gql`mutation DoAnotherThing { doAnotherThing(type: "Foo")}`
+
+const QUERY = gql`mutation DoThing { doThing(type: "Foo")}`
 
 // Treats GraphQL errors as network errors. result.error.graphQLErrors will be populated. result.data will be undefined.
 // On refetch, a GraphQL exception is thrown to the console.
@@ -30,7 +35,10 @@ const QUERY = gql`{missing}`
 // On refetch, no exception is thrown.
 const errorPolicy = "all";
 
-// DO NOT MODIFY BELOW HERE
+const onErrorHandler = (args) => {console.log("onError", args)}
+// const onErrorHandler = undefined;
+
+// DO NOT MODIFY BELOW THIS POINT
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
@@ -56,7 +64,7 @@ function DataComponent() {
     errorPolicy: errorPolicy,
     // For mutations, the onError handler suppressess network error-exceptions.
     // It does not, however, for network error-exceptions that occur in queries.
-    // onError: (args) => {console.log("onError", args)}
+    onError: onErrorHandler
   });
 
   console.log("result", result)
@@ -77,11 +85,26 @@ function DataComponent() {
   return <p>Result: SUCCESS</p>;
 }
 
+function MutateComponent() {
+  const [doMutation] = useMutation(QUERY,
+  {
+    errorPolicy: errorPolicy,
+    onError: onErrorHandler
+  });
+
+  doMutation()
+
+  return (
+    <div></div>
+  )
+}
+
 const App = () => (
   <ApolloProvider client={client}>
     <div>
       <p>This page makes a graphQL query to an Apollo server running at localhost:4000 and logs any GraphQL errors or network errors. It will print 'true' if there are GraphQL errors and/or network errors present.</p>
-      <DataComponent />
+      {/* <DataComponent /> */}
+      <MutateComponent />
     </div>
   </ApolloProvider>
 );
