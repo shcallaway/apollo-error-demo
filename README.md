@@ -4,8 +4,6 @@ The Apollo Client recognizes two types of errors: GraphQL errors and network err
 
 This demo allows you to explore Apollo's error handling behavior with varying error types and `errorPolicy` configurations.
 
-*Note that there is no error type/`errorPolicy` configuration combination that causes an exception to be thrown to the console! This raises the question: how/why are we seeing GraphQL and network errors in the Brex dashboard Sentry project?!*
-
 ## Getting Started
 
 Start the GraphQL server:
@@ -25,6 +23,15 @@ npm start
 ```
 
 Visit [localhost:3000](http://localhost:3000/).
+
+## Findings
+
+TL;DR - Error handling in Apollo 2.6 is completely inconsistent.
+
+1. There is no error type/`errorPolicy` configuration combination that causes an exception to be thrown to the console (without refetch)!
+2. GraphQL errors and network errors that occur during refetch can both result in exceptions (depending on the `errorPolicy`).
+3. There is no `errorPolicy`/`onError` configuration that prevents network errors from being thrown to the console during refetch (for queries).
+4. The `onError` handler suppresses network error-caused exceptions that occur during refetch _for mutations_.
 
 ## Resources
 
