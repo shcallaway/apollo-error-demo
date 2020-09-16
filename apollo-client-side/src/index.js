@@ -19,14 +19,14 @@ import { HttpLink } from "apollo-link-http";
 // QUERIES AND MUTATIONS (PICK ONE)
 
 // This query will succeed.
-const QUERY = gql`{good}`
+// const QUERY = gql`{good}`
 
 // This query will trigger a network error because "missing" is not part of the schema.
 // const QUERY = gql`{missing}`
 
 // This query will trigger a GraphQL error because the "bad" query throws an error on the server-side.
 // Depending on the errorPolicy, result.data may be undefined or partially populated.
-// const QUERY = gql`{good, bad}`
+const QUERY = gql`{good, bad}`
 
 // This mutation will succeed.
 // const QUERY = gql`mutation DoThing { doThing(type: "Foo")}`
@@ -85,9 +85,8 @@ function DataComponent() {
   console.log("result", result)
 
   if (result.loading) return <p>Loading...</p>;
+
   if (result.error) {
-    console.log("graphQLErrors", result.error.graphQLErrors)
-    console.log("networkError", result.error.networkError)
     return <div>
       <p>Result: ERROR</p>
       <p>graphQLErrors: {result.error.graphQLErrors.length ? "true" : "false"}</p>
