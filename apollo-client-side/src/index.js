@@ -10,7 +10,16 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { onError } from "apollo-link-error";
 import { HttpLink } from "apollo-link-http";
 
-// Instructions: Try uncommenting a single QUERY and errorPolicy to see how they behave.
+// INSTRUCTIONS
+
+// Try uncommenting a single QUERY and errorPolicy to see how they behave.
+// You will also need to comment out DataComponent or MutateComponent in the App HTML
+// based on whether you are performing a query or mutation.
+
+// QUERIES AND MUTATIONS (PICK ONE)
+
+// This query will succeed.
+const QUERY = gql`{good}`
 
 // This query will trigger a network error because "missing" is not part of the schema.
 // const QUERY = gql`{missing}`
@@ -19,26 +28,32 @@ import { HttpLink } from "apollo-link-http";
 // Depending on the errorPolicy, result.data may be undefined or partially populated.
 // const QUERY = gql`{good, bad}`
 
+// This mutation will succeed.
+// const QUERY = gql`mutation DoThing { doThing(type: "Foo")}`
+
 // This produces a network error because doAnotherThing does not exist on the server-side.
 // const QUERY = gql`mutation DoAnotherThing { doAnotherThing(type: "Foo")}`
 
-const QUERY = gql`mutation DoThing { doThing(type: "Foo")}`
+// ERROR POLICIES (PICK ONE)
 
 // Treats GraphQL errors as network errors. result.error.graphQLErrors will be populated. result.data will be undefined.
 // On refetch, a GraphQL exception is thrown to the console.
-// const errorPolicy = "none";
+const errorPolicy = "none";
 
 // Completely ignores GraphQL errors. result.error will be undefined. result.data will be partially populated.
 // const errorPolicy = "ignore";
 
 // Same as "none" except result.data will be partially populated. result.error.graphQLErrors will be populated.
 // On refetch, no exception is thrown.
-const errorPolicy = "all";
+// const errorPolicy = "all";
 
-const onErrorHandler = (args) => {console.log("onError", args)}
-// const onErrorHandler = undefined;
+// ERROR HANLDERS (PICK ONE)
 
-// DO NOT MODIFY BELOW THIS POINT
+// You can turn on/off an error handler here.
+// const onErrorHandler = (args) => {console.log("onError", args)}
+const onErrorHandler = undefined;
+
+// DO NOT MODIFY - START
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
@@ -75,7 +90,7 @@ function DataComponent() {
     console.log("networkError", result.error.networkError)
     return <div>
       <p>Result: ERROR</p>
-      <p>graphQLErrors: {result.error.graphQLErrors ? "true" : "false"}</p>
+      <p>graphQLErrors: {result.error.graphQLErrors.length ? "true" : "false"}</p>
       <p>networkError: {result.error.networkError ? "true" : "false"}</p>
       <p>See console for more info.</p>
       <button onClick={() => result.refetch()}>Refetch!</button>
@@ -99,12 +114,16 @@ function MutateComponent() {
   )
 }
 
+// DO NOT MODIFY - END
+
+// Use DataComponent for a query and MutateComponent for a mutation.
+
 const App = () => (
   <ApolloProvider client={client}>
     <div>
       <p>This page makes a graphQL query to an Apollo server running at localhost:4000 and logs any GraphQL errors or network errors. It will print 'true' if there are GraphQL errors and/or network errors present.</p>
-      {/* <DataComponent /> */}
-      <MutateComponent />
+      <DataComponent />
+      {/* <MutateComponent /> */}
     </div>
   </ApolloProvider>
 );
